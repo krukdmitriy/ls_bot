@@ -145,7 +145,6 @@ function inline_button(type) {
     let opts;
     switch (type) {
         case 'getNumber':
-        case 'getCode':
             opts = {
                 reply_markup: {
                     inline_keyboard: [
@@ -164,6 +163,7 @@ function inline_button(type) {
             };
             break
         case 'replayCode':
+        case 'getCode':
              opts = {
                 reply_markup: {
                     inline_keyboard: [
@@ -175,6 +175,10 @@ function inline_button(type) {
                             {
                                 text: '✅',
                                 callback_data: 'successCode'
+                            },
+                            {
+                                text: '🔄',
+                                callback_data: 'replayCode'
                             }
                         ]
                     ]
