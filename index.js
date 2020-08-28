@@ -5,7 +5,7 @@ const axios = require('axios');
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
 
-const token = '1309198069:AAEpp7V9JUy4u-SG_NTx9K7rHTXqwfdriOs';
+const token = process.env.TT;
 
 const bot = new TelegramBot(token, {polling: true});
 
@@ -94,7 +94,7 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
                 myCache.set( username, {...user,id_number:status[1],number:status[2]}, 10000000000 );
                 break
         }
-        bot.sendMessage(id, status[2] ,inline_button('getNumber'));
+        bot.sendMessage(id, (status[2]+'').slice(0,5) ,inline_button('getNumber'));
     });
 });
 
