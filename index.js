@@ -42,7 +42,7 @@ bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
     const {message_id,chat:{id,username}} = msg;
 
     myCache.set( username, {apikey:match}, 10000000000 );
-    client.set({apikey:match});
+    client.set(username,{apikey:match});
 
     bot.sendMessage(id,'Апи ключ сохранен',inline_button());
     bot.deleteMessage(id, message_id);
