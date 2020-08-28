@@ -25,7 +25,14 @@ const bot = new TelegramBot(TOKEN, options);
 bot.setWebHook(`${url}/bot${TOKEN}`);
 
 
-
+bot.on('message', function onMessage(msg) {
+    const {chat:{id,username}} = msg;
+    !!myCache.get(username)?
+        console.log(username+' no cache') :
+        client.get(username, (er,reply) => {
+            myCache.set(username, JSON.parse(reply), 10000000000)
+        });
+});
 
 
 bot.onText(/\/start/, function onEchoText(msg) {
