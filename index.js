@@ -5,10 +5,21 @@ const axios = require('axios');
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
 
-const token = process.env.TT;
+const TOKEN = process.env.TT ;
 
-const bot = new TelegramBot(token, {polling: true});
 
+
+
+const options = {
+    webHook: {
+
+        port: process.env.PORT,
+        polling: true
+    }
+};
+const url = process.env.APP_URL || 'https://lssms.herokuapp.com:443';
+const bot = new TelegramBot(TOKEN, options);
+bot.setWebHook(`${url}/bot${TOKEN}`);
 
 bot.onText(/\/start/, function onEchoText(msg) {
     bot.sendMessage(msg.chat.id, 'Введите свой API-ключ командой /apikey (свой API-ключ)');
