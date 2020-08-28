@@ -4,36 +4,50 @@ const axios = require('axios');
 
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache();
+const redis = require("redis");
+const client = redis.createClient(process.env.REDIS_PORT,
+    process.env.REDIS_URL,
+    {auth_pass: process.env.REDIS_PASS});
+
+client.on("error", function(error) {
+    console.error(error);
+});
 
 const TOKEN = process.env.TT ;
-
-
-
-
 const options = {
     webHook: {
-
         port: process.env.PORT,
         polling: true
     }
 };
-const url = process.env.APP_URL || 'https://lssms.herokuapp.com:443';
+const url = process.env.APP_URL;
 const bot = new TelegramBot(TOKEN, options);
 bot.setWebHook(`${url}/bot${TOKEN}`);
 
+
+
+
+
 bot.onText(/\/start/, function onEchoText(msg) {
-    bot.sendMessage(msg.chat.id, 'Введите свой API-ключ командой /apikey (свой API-ключ)');
+    const {chat:{id,username}} = msg;
+    !myCache.get(username) ? console.log('no cache') : client.get(username, (er,reply) => {
+        myCache.set(username, JSON.parse(reply), 10000000000)
+        bot.sendMessage(msg.chat.id, 'Выберите дествия',inline_button());
+    });
+
+    bot.sendMessage(id, 'Введите свой API-ключ командой /apikey (свой API-ключ)');
 });
 
 bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
     const {message_id,chat:{id,username}} = msg;
 
     myCache.set( username, {apikey:match}, 10000000000 );
-
+    client.set({apikey:match});
 
     bot.sendMessage(id,'Апи ключ сохранен',inline_button());
     bot.deleteMessage(id, message_id);
 })
+
 bot.onText(/\/myapikey/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
 
@@ -125,7 +139,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery) {
         case 'getCode':
             smsHubRequest('getCode',user).then(response => {
                 text = getStatusCode(response.data);
-                bot.sendMessage(id, text.text, inline_button('getCode'));
+                text.status ? bot.sendMessage(id, text.text, inline_button('getCode')):'';
             });
             break
         case 'replayCode':
@@ -173,8 +187,25 @@ function inline_button(type) {
                 }
             };
             break
-        case 'replayCode':
         case 'getCode':
+            opts = {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: '✅',
+                                callback_data: 'successCode'
+                            },
+                            {
+                                text: '🔄',
+                                callback_data: 'replayCode'
+                            }
+                        ]
+                    ]
+                }
+            };
+            break
+        case 'replayCode':
              opts = {
                 reply_markup: {
                     inline_keyboard: [
