@@ -30,7 +30,7 @@ bot.setWebHook(`${url}/bot${TOKEN}`);
 
 bot.onText(/\/start/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
-    !myCache.get(username) ? console.log('no cache') : client.get(username, (er,reply) => {
+    !!myCache.get(username) ? console.log('no cache') : client.get(username, (er,reply) => {
         myCache.set(username, JSON.parse(reply), 10000000000)
         bot.sendMessage(msg.chat.id, 'Выберите дествия',inline_button());
     });
@@ -42,7 +42,7 @@ bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
     const {message_id,chat:{id,username}} = msg;
 
     myCache.set( username, {apikey:match}, 10000000000 );
-    client.set(username,{apikey:match});
+    client.set(username,JSON.stringify({apikey:match}));
 
     bot.sendMessage(id,'Апи ключ сохранен',inline_button());
     bot.deleteMessage(id, message_id);
