@@ -122,7 +122,7 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
                 myCache.set( username, {...user,id_number:status[1],number:status[2]}, 10000000000 );
                 break
         }
-        bot.sendMessage(id, (status[2]+'').slice(0,5) ,inline_button('getNumber'));
+        bot.sendMessage(id, (status[2]+'').slice(3,12) ,inline_button('getNumber'));
     });
 });
 
