@@ -30,12 +30,15 @@ bot.setWebHook(`${url}/bot${TOKEN}`);
 
 bot.onText(/\/start/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
-    !!myCache.get(username) ? console.log('no cache') : client.get(username, (er,reply) => {
-        myCache.set(username, JSON.parse(reply), 10000000000)
-        bot.sendMessage(msg.chat.id, 'Выберите дествия',inline_button());
-    });
 
-    bot.sendMessage(id, 'Введите свой API-ключ командой /apikey (свой API-ключ)');
+    !!myCache.get(username)?
+        bot.sendMessage(id, 'Введите свой API-ключ командой /apikey (свой API-ключ)') :
+        client.get(username, (er,reply) => {
+            myCache.set(username, JSON.parse(reply), 10000000000)
+            bot.sendMessage(msg.chat.id, 'Выберите дествия',inline_button());
+        });
+
+
 });
 
 bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
