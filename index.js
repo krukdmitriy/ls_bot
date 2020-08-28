@@ -261,6 +261,7 @@ function getStatusCode(status){
             status = false;
             break;
         case 'STATUS_WAIT_RETRY':
+        case 'ACCESS_RETRY_GET':
             text = 'Ожидаем нового смс';
             status = false;
             break;
