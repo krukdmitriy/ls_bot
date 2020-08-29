@@ -24,26 +24,27 @@ const url = process.env.APP_URL;
 const bot = new TelegramBot(TOKEN, options);
 bot.setWebHook(`${url}/bot${TOKEN}`);
 
+//DEV
+//const bot = new TelegramBot(process.env.TT,{polling: true});
 
 bot.on('message', function onMessage(msg) {
     const {chat:{id,username}} = msg;
-    !!myCache.get(username)?
-        console.log(username+' no cache') :
-        client.get(username, (er,reply) => {
-            !reply && myCache.set(username, JSON.parse(reply), 10000000000)
+    !!myCache.get(id)?
+        console.log(' ') :
+        client.get(id, (er,reply) => {
+            !!reply? myCache.set(id, JSON.parse(reply), 10000000000) :'' ;
         });
 });
 
 
 bot.onText(/\/start/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
-
-        client.get(username, (er,reply) => {
+        client.get(id, (er,reply) => {
             if(!reply) {
                 bot.sendMessage(id, 'Введите свой API-ключ командой /apikey (свой API-ключ)')
             }
             else {
-                bot.sendMessage(id, 'Выберите дествия', inline_button());
+                bot.sendMessage(id, 'Выберите действие', inline_button());
             }
         });
 });
@@ -51,8 +52,8 @@ bot.onText(/\/start/, function onEchoText(msg) {
 bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
     const {message_id,chat:{id,username}} = msg;
 
-    myCache.set( username, {apikey:match}, 10000000000 );
-    client.set(username,JSON.stringify({apikey:match}));
+    myCache.set( id, {apikey:match}, 10000000000 );
+    client.set(id, JSON.stringify({ apikey :match}));
 
     bot.sendMessage(id,'Апи ключ сохранен',inline_button());
     bot.deleteMessage(id, message_id);
@@ -61,7 +62,7 @@ bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
 bot.onText(/\/myapikey/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
 
-    bot.sendMessage(id, myCache.get(username).apikey,inline_button());
+    bot.sendMessage(id, myCache.get(id).apikey,inline_button());
 });
 //-------------------------------------------------------//
 
@@ -69,20 +70,20 @@ bot.onText(/\/myapikey/, function onEchoText(msg) {
 
 bot.onText(/\Цена/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
-    const user = myCache.get(username);
+    const user = myCache.get(id);
 
     smsHubRequest('getPrice',user).then(response => {
         const pricess = response.data['1'].tx;
         const pricekeys = Object.keys(pricess);
         minPirice = pricekeys[0];
         contMinPirice = pricess[pricekeys[0]];
-        bot.sendMessage(id, 'Минимальная цена: '+ minPirice+ '  количество номеров: ' + contMinPirice);
+        bot.sendMessage(id, 'Минимальная цена: '+ minPirice+ ' руб.  количество номеров: ' + contMinPirice);
     });
 });
 
 bot.onText(/\Баланс/, function onEchoText(msg) {
     const {chat:{id,username}} = msg;
-    const user = myCache.get(username);
+    const user = myCache.get(id);
 
     smsHubRequest('getBalance',user).then(response => {
         bot.sendMessage(id, 'Баланс: '+ response.data.split(':')[1]+ ' руб.');
@@ -120,13 +121,13 @@ async function smsHubRequest(type,user,status = null) {
 
 bot.onText(/\Заказать номер/, function onEditableText(msg) {
     const {chat:{id,username}} = msg;
-    const user =  myCache.get(username);
+    const user =  myCache.get(id);
 
     smsHubRequest('getNumber',user).then(response => {
         let status =  response.data.split(':')
         switch(status[0]){
             case 'ACCESS_NUMBER':
-                myCache.set( username, {...user,id_number:status[1],number:status[2]}, 10000000000 );
+                myCache.set( id, {...user,id_number:status[1],number:status[2]}, 10000000000 );
                 break
         }
         bot.sendMessage(id, (status[2]+'').slice(3,12) ,inline_button('getNumber'));
@@ -140,7 +141,7 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
     const action = callbackQuery.data;
     const {chat:{id,username}} = callbackQuery.message;
-    const user =  myCache.get(username);
+    const user =  myCache.get(id);
 
 
     let text;
@@ -193,7 +194,8 @@ function inline_button(type) {
                                 callback_data: 'cancelCode'
                             }
                         ]
-                    ]
+                    ],
+                    'resize_keyboard': true
                 }
             };
             break
@@ -211,7 +213,8 @@ function inline_button(type) {
                                 callback_data: 'replayCode'
                             }
                         ]
-                    ]
+                    ],
+                    'resize_keyboard': true
                 }
             };
             break
@@ -232,8 +235,10 @@ function inline_button(type) {
                                 text: '🔄',
                                 callback_data: 'replayCode'
                             }
-                        ]
-                    ]
+                        ],
+
+                    ],
+                    'resize_keyboard': true
                 }
             };
 
@@ -244,10 +249,10 @@ function inline_button(type) {
             opts = {
                 reply_markup: JSON.stringify({
                     keyboard: [
-                        ['Цена'],
-                        ['Баланс'],
+                        ['Цена','Баланс'],
                         ['Заказать номер']
-                    ]
+                    ],
+                    'resize_keyboard': true
                 })
             };
             break
