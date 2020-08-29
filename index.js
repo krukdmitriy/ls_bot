@@ -30,7 +30,7 @@ bot.on('message', function onMessage(msg) {
     !!myCache.get(username)?
         console.log(username+' no cache') :
         client.get(username, (er,reply) => {
-            myCache.set(username, JSON.parse(reply), 10000000000)
+            !reply && myCache.set(username, JSON.parse(reply), 10000000000)
         });
 });
 
@@ -41,14 +41,11 @@ bot.onText(/\/start/, function onEchoText(msg) {
         client.get(username, (er,reply) => {
             if(!reply) {
                 bot.sendMessage(id, 'Введите свой API-ключ командой /apikey (свой API-ключ)')
-                myCache.set(username, JSON.parse(reply), 10000000000)
             }
             else {
-                bot.sendMessage(msg.chat.id, 'Выберите дествия', inline_button());
+                bot.sendMessage(id, 'Выберите дествия', inline_button());
             }
         });
-
-
 });
 
 bot.onText(/\/apikey (.+)/ ,(msg,[source, match])=>{
