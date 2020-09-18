@@ -134,17 +134,17 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
     });
 });
 
-// bot.onText(/\Пополнить (.+)/ , (msg,[source, match])=>{
-//     const {chat:{id,username}} = msg;
-//     const user =  myCache.get(id);
-//
-//     let amount = match.indexOf('.') == 1? match: match+ '.00';
-//     let amountFraction = match.indexOf('.') == -1? '00' : match.split('.')[1].length == 1? match.split('.')[1] + '0': match.split('.')[1];
-//
-//     $paymentUrl = 'https://qiwi.com/payment/form/99?blocked%5B0%5D=account&amountFraction='+ amountFraction +'&extra%5B%27account%27%5D=79776962780&extra%5B%27comment%27%5D=hub_'+user.apikey.slice(0,5)+'&amountInteger='+ amount +'&blocked%5B1%5D=sum&currency=RUB'
-//     bot.sendMessage(id, $paymentUrl ,inline_button());
-//
-// });
+bot.onText(/\Пополнить (.+)/ , (msg,[source, match])=>{
+    const {chat:{id,username}} = msg;
+    const user =  myCache.get(id);
+
+    let amount = match.indexOf('.') == 1? match: match+ '.00';
+    let amountFraction = match.indexOf('.') == -1? '00' : match.split('.')[1].length == 1? match.split('.')[1] + '0': match.split('.')[1];
+
+    $paymentUrl = 'https://qiwi.com/payment/form/99?blocked%5B0%5D=account&amountFraction='+ amountFraction +'&extra%5B%27account%27%5D=79776962780&extra%5B%27comment%27%5D=hub_'+user.apikey.slice(0,5)+'&amountInteger='+ amount +'&blocked%5B1%5D=sum&currency=RUB'
+    bot.sendMessage(id, $paymentUrl ,inline_button());
+
+});
 
 
 bot.on('callback_query', function onCallbackQuery(callbackQuery) {
