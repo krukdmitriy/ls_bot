@@ -134,7 +134,7 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
     });
 });
 
-bot.onText(/\/Пополнить/, (msg,[source, match])=>{
+bot.onText(/\/Пополнить (.+)/ , (msg,[source, match])=>{
     const {chat:{id,username}} = msg;
     const user =  myCache.get(id);
     $paymentUrl = 'https://qiwi.com/payment/form/99?blocked%5B0%5D=account&amountFraction=75&extra%5B%27account%27%5D=79776962780&extra%5B%27comment%27%5D=hub_'+user.apikey.slice(0,5)+'&amountInteger='+ match +'&blocked%5B1%5D=sum&currency=RUB'
