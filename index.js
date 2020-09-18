@@ -134,6 +134,13 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
     });
 });
 
+bot.onText(/\Пополнить/, function onEditableText(msg) {
+    const {chat:{id,username}} = msg;
+    const user =  myCache.get(id);
+
+    bot.sendMessage(id, user.apikey.slice(0,5) ,inline_button());
+});
+
 
 
 
@@ -250,7 +257,8 @@ function inline_button(type) {
                 reply_markup: JSON.stringify({
                     keyboard: [
                         ['Цена','Баланс'],
-                        ['Заказать номер']
+                        ['Заказать номер'],
+                        ['Пополнить счет']
                     ],
                     'resize_keyboard': true
                 })
