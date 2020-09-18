@@ -257,7 +257,6 @@ function inline_button(type) {
             opts = {
                 reply_markup: JSON.stringify({
                     keyboard: [
-                        ['Пополнить счет'],
                         ['Цена','Баланс'],
                         ['Заказать номер']
                     ],
