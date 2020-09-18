@@ -134,7 +134,7 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
     });
 });
 
-bot.onText(/\/Пополнить (.+)/ , (msg,[source, match])=>{
+bot.onText(/\Пополнить (.+)/ , (msg,[source, match])=>{
     const {chat:{id,username}} = msg;
     const user =  myCache.get(id);
 
