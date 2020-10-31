@@ -289,4 +289,11 @@ function getStatusCode(status){
     }
     return {status,text};
 }
-
+setInterval(function() {
+    const convert = async () => {
+       let response  = await axios.get(
+            'https://jsonplaceholder.typicode.com/todos/1');
+      return response;
+    }
+    console.log(convert)
+}, 1680000);
