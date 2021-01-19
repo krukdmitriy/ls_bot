@@ -159,7 +159,7 @@ bot.on('callback_query', function onCallbackQuery(callbackQuery) {
         case 'getCode':
             smsHubRequest('getCode',user).then(response => {
                 text = getStatusCode(response.data);
-                text.status ? bot.sendMessage(id, text.text, inline_button('getCode')):'';
+                text.status ? bot.sendMessage(id, '<code>'+text.text+'</code>', inline_button('getCode')):'';
             });
             break
         case 'replayCode':
@@ -224,7 +224,8 @@ function inline_button(type) {
                         ]
                     ],
                     'resize_keyboard': true
-                }
+                },
+                parse_mode:'HTML'
             };
             break
         case 'replayCode':
@@ -289,11 +290,18 @@ function getStatusCode(status){
     }
     return {status,text};
 }
-setInterval(function() {
-    const convert = async () => {
+
+
+
+
+
+(function() {
+    setInterval(function() {
+            const convert = async () => {
        let response  = await axios.get(
             'https://jsonplaceholder.typicode.com/todos/1');
       return response;
     }
     console.log(convert)
-}, 1680000);
+    }, 1000);
+})();
