@@ -98,11 +98,11 @@ async function smsHubRequest(type,user,status = null) {
             break;
         case 'getPrice':
             response = await axios.get(
-                'https://smshub.org/stubs/handler_api.php?api_key='+user.apikey+'&action=getPrices&service=tx&country=1');
+                'https://smshub.org/stubs/handler_api.php?api_key='+user.apikey+'&action=getPrices&service=tx&country=2');
             break;
         case 'getNumber':
             response =  await axios.get(
-                'https://smshub.org/stubs/handler_api.php?api_key='+user.apikey+'&action=getNumber&service=tx&country=1');
+                'https://smshub.org/stubs/handler_api.php?api_key='+user.apikey+'&action=getNumber&service=tx&country=2');
             break;
         case 'getCode':
             response = await axios.get(
@@ -130,7 +130,7 @@ bot.onText(/\Заказать номер/, function onEditableText(msg) {
                 myCache.set( id, {...user,id_number:status[1],number:status[2]}, 10000000000 );
                 break
         }
-        bot.sendMessage(id, (status[2]+'').slice(3,12) ,inline_button('getNumber'));
+        bot.sendMessage(id, status[2]+'' ,inline_button('getNumber'));
     });
 });
 
